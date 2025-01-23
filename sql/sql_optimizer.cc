@@ -6233,10 +6233,20 @@ static ha_rows get_quick_record_count(THD *thd, JOIN_TAB *tab, ha_rows limit,
     keys_to_use.merge(tab->skip_scan_keys);
     MEM_ROOT temp_mem_root(key_memory_test_quick_select_exec,
                            thd->variables.range_alloc_block_size);
+
+    table_map const_tables, read_tables;
+    if (tab->join()) {
+      const_tables = tab->join()->found_const_table_map;
+      read_tables = tab->join()->is_executed()
+                        ? (tab->prefix_tables() & ~tab->added_tables())
+                        : const_tables;
+    } else {
+      const_tables = read_tables = 0;
+    }
+
     int error = test_quick_select(
-        thd, thd->mem_root, &temp_mem_root, keys_to_use, 0,
-        0,  // empty table_map
-        limit,
+        thd, thd->mem_root, &temp_mem_root, keys_to_use, const_tables,
+        read_tables, limit,
         false,  // don't force quick range
         ORDER_NOT_RELEVANT, tab->table(), tab->skip_records_in_range(),
         condition, &tab->needed_reg, tab->table()->force_index,
@@ -7013,11 +7023,13 @@ static uint get_semi_join_select_list_index(Item_field *item_field) {
   if (emb_sj_nest && emb_sj_nest->is_sj_or_aj_nest()) {
     const mem_root_deque<Item *> &items =
         emb_sj_nest->nested_join->sj_inner_exprs;
-    for (size_t i = 0; i < items.size(); i++) {
-      const Item *sel_item = items[i];
+    size_t i = 0;
+    for (auto it = items.begin(); it != items.end(); ++it) {
+      const Item *sel_item = *it;
       if (sel_item->type() == Item::FIELD_ITEM &&
           down_cast<const Item_field *>(sel_item)->field->eq(item_field->field))
         return i;
+      i++;
     }
   }
   return UINT_MAX;
