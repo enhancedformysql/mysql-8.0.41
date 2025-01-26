@@ -348,7 +348,7 @@ class Global_THD_manager {
   static std::atomic<uint> atomic_global_thd_count;
 
   // Number of THD list partitions.
-  static const int NUM_PARTITIONS = 8;
+  static const int NUM_PARTITIONS = 256;
 
  private:
   Global_THD_manager();
