@@ -15,9 +15,7 @@ Extensive testing has shown that these optimizations are especially effective on
 - **Addressing Performance Issues Due to Poor MySQL NUMA Compatibility.**
 - **Mature High Availability Product:** Improved Paxos protocol and protocol interactions, along with better design and enhanced cluster write performance.
 
-These improvements are designed to enhance MySQL’s performance in high-throughput environments, achieve consistent reads, and address various failure issues, ensuring high availability and performance in high-concurrency scenarios, making it particularly suitable for internet companies.
-
-The compiled version utilizing PGO optimization is recommended. Users interested in conducting comparative tests are encouraged to do so on high-spec machines, utilizing BenchmarkSQL for testing.
+These improvements are designed to enhance MySQL’s performance in high-throughput environments, achieve consistent reads, and address various failure issues, ensuring high availability and performance in high-concurrency scenarios, making it particularly suitable for internet companies
 
 ## Note
 
